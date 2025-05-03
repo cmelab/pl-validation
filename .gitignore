@@ -5,3 +5,4 @@
 *.csv
 *.gsd
 *.txt
+__pycache__/

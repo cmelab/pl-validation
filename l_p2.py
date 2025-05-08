@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import scipy
 import statsmodels.api as sm
 
-#from cmeutils.sampling import autocorr1D
 
 def autocorr1D(array):
     """Takes in a linear np array, performs autocorrelation
@@ -52,7 +51,6 @@ def persistence_length(filepath,start,stop,interval):
                 particle_index.append(atom1)
             if atom2 not in particle_index:
                 particle_index.append(atom2)
- #   print(bond_indices)
 
     """create bonds list"""
     autocorrelation = []
@@ -67,7 +65,7 @@ def persistence_length(filepath,start,stop,interval):
         for i in particle_index:
             pos = t.positions[i]
             particle_positions.append(pos)
-        for i in range(len(u.bonds)):
+        for i in range(len(particle_positions)-1):
             b = particle_positions[i+1]-particle_positions[i]
             bonds.append(b)
             l2 = t.dimensions[0]/2
@@ -81,10 +79,8 @@ def persistence_length(filepath,start,stop,interval):
             unit_bonds.append(a)
             length = np.linalg.norm(b)
             bond_lengths.append(length)
-            #l_b = np.mean(bond_lengths)
         bond_len.append(bond_lengths)
 
-#        angles.append(np.dot(unit_bonds,unit_bonds))
 
         for i in range(len(unit_bonds)-1):
             b1 = unit_bonds[0]
@@ -97,11 +93,7 @@ def persistence_length(filepath,start,stop,interval):
         n_chains = 1
         norm = np.linspace(1,n- 1, n - 1)
         norm *= n_chains# * n_frames
-        #auto = autocorr1D(angles)
-        #auto = sm.tsa.acf(angles)
-        #autocorrelation.append(auto)
         autocorrelation.append(angles)#/norm)
-#        print(angles) 
 
     '''average the data from trajectories together'''
     auto_average = []
@@ -110,10 +102,8 @@ def persistence_length(filepath,start,stop,interval):
         for i in range(len(autocorrelation)):
             k.append(autocorrelation[i][j])
         auto_average.append(np.mean(k))
-#    print(auto_average)
 
     l_b = np.average(bond_len)
-#    result = [x/len(av) for x in sums]
     x = [i for i in range(len(auto_average))]
 
     '''set negative results to 0'''

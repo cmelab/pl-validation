@@ -7,3 +7,5 @@
 *.txt
 __pycache__/*
 *.pt
+project.py
+init.py

@@ -67,9 +67,8 @@ def persistence_length(filepath,start,stop,interval):
         for i in particle_index:
             pos = t.positions[i]
             particle_positions.append(pos)
-        for i in range(len(u.bonds)-1):
-            print(particle_positions[i])
-            print(len(particle_positions), len(u.bonds))
+        # for i in range(len(u.bonds)-1):
+        for i in range(len(particle_positions)-1):
             b = particle_positions[i+1]-particle_positions[i]
             bonds.append(b)
             l2 = t.dimensions[0]/2

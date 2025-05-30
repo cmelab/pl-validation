@@ -1,4 +1,4 @@
-# Dictionary of polymers and their key parameters for sims
+# Dictionary of polymers and their key parameters
 
 bond_indices = {
     "PCPDTPT_nC16": {"Bond indices": [121,122], "Orientations":[[1,0,0],[-1,0,0]], "Density": 0.05},
@@ -15,3 +15,11 @@ bond_indices = {
     "PCPDTPT_ODD": {"Bond indices": [145,146], "Orientations":[[-1,0,0],[1,0,0]], "Density": 0.05},
     "PCPDTFBT_C4_BO": {"Bond indices": [232,233], "Orientations":[[-1,0,0],[1,0,0]], "Density": 0.01}
 }
+
+molecules_not_tested_in_paper = {
+    "PDPPPyT_ODD": {"Bond indicies": [164,165], "Orientations":[[1,1,1],[-1,-1,-1]]},
+    "PCPDTPT_nC16": {"Bond indices": [52,53], "Orientations":[[-1,0,0],[1,0,0]], "Density": "0.05"} # Nitrogen in the correct position
+}
+
+Fixed_PCPDTPT_nC16_SMILES_string = "C1SC2C3SC(C4C5=NSN=C5C=NC=4)=CC=3C(CCCCCCCCCCCCCCCC)(CCCCCCCCCCCCCCCC)C=2C=1" # Fairly certain the carbon rings should be aromatic
+Fixed_SMILES_bond_indices = [52,53]

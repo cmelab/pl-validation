@@ -18,8 +18,8 @@ bond_indices = {
 
 molecules_not_tested_in_paper = {
     "PDPPPyT_ODD": {"Bond indicies": [164,165], "Orientations":[[1,1,1],[-1,-1,-1]]},
-    "PCPDTPT_nC16": {"Bond indices": [52,53], "Orientations":[[-1,0,0],[1,0,0]], "Density": "0.05"} # Nitrogen in the correct position
+    "fixed_PCPDTPT_nC16": {"Bond indices": [52,53], "Orientations":[[-1,0,0],[1,0,0]], "Density": "0.05"} # Nitrogen in the correct position
 }
 
 Fixed_PCPDTPT_nC16_SMILES_string = "C1SC2C3SC(C4C5=NSN=C5C=NC=4)=CC=3C(CCCCCCCCCCCCCCCC)(CCCCCCCCCCCCCCCC)C=2C=1" # Fairly certain the carbon rings should be aromatic
-Fixed_SMILES_bond_indices = [52,53]
+aromatic_version = "c1Sc2c3Sc(c4c5=NSN=c5c=Nc=4)=cc=3c(CCCCCCCCCCCCCCCC)(CCCCCCCCCCCCCCCC)c=2c=1" # Running into RDKit error when parameterizing

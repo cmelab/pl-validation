@@ -5,7 +5,7 @@
 *.csv
 *.gsd
 *.txt
-__pycache__/*
+__pycache__/
 *.pt
 project.py
 init.py

@@ -1,5 +1,7 @@
 # Jupyter Notebook
 .ipynb_checkpoints
+fixed_PCPDTPT_nC16.mol2
+fixed_PCPDTPT_nC16.xml
 
 # Test files
 *.csv

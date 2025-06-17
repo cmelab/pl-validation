@@ -19,3 +19,5 @@ dependencies:
   - espaloma = 0.3.2
   - openbabel
   - py3Dmol
+  - flowermd
+

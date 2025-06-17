@@ -9,6 +9,7 @@ The ff_generation.ipynb generates mbuild monomers and their forcefields using [E
 poly_builder.ipynb uses mbuild to polymerize the monomers.
 
 poly_min_working_example.ipynb contains code to run NVT shrinks and simulations.
+
 data_analysis.ipynb has the requisite functions for calculating the persistence length of mbuild polymers.
 
 # To install environment:

@@ -19,3 +19,5 @@ dependencies:
   - openbabel
   - py3Dmol
   - flowermd
+  - signac <= 1.8
+  - signac-flow <= 0.24

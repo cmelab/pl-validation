@@ -23,3 +23,17 @@ molecules_not_tested_in_paper = {
 
 Fixed_PCPDTPT_nC16_SMILES_string = "C1SC2C3SC(C4C5=NSN=C5C=NC=4)=CC=3C(CCCCCCCCCCCCCCCC)(CCCCCCCCCCCCCCCC)C=2C=1" # Fairly certain the carbon rings should be aromatic
 aromatic_version = "c1Sc2c3Sc(c4c5=NSN=c5c=Nc=4)=cc=3c(CCCCCCCCCCCCCCCC)(CCCCCCCCCCCCCCCC)c=2c=1" # Running into RDKit error when parameterizing
+
+polymer_fragments = {
+    "P":"c1ccncc1",
+    "CPDT":"C1C3=C(SC=C3)C2=C1C=CS2",
+    "PT":"n1ccc2nsnc2c1",
+    "IDT":"C1C2=C(C3=CC4=C(C=C31)C5=C(C4)C=CS5)SC=C2",
+    "BT":"c1ccc2nsnc2c1",
+    "DPP":"N1C=C(C(=O)Nc2)c2C1(=O)",
+    "FBT":"c1(F)ccc2nsnc2c1",
+    "T":"c1ccsc1",
+    "CPDT_eneHD":"C1(=C(CC(CCCCCC)CCCCCCCC)CC(CCCCCC)CCCCCCCC)C3=C(SC=C3)C2=C1C=CS2",
+    "TPD":"C1(=O)C2=CSC=C2C(=O)N1(CCCCCCCC)",
+    "BDT":"s1c2c(OCC(CC)CCCC)c3ccsc3c(OCC(CC)CCCC)c2cc1"}
+    

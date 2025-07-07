@@ -61,7 +61,6 @@ class Fry(DefaultSlurmEnvironment):
 def sampled(job):
     return job.doc.get("done")
 
-
 @MyProject.label
 def initialized(job):
     pass
@@ -74,15 +73,20 @@ def initial_run_done(job):
 def equilibrated(job):
     return job.doc.equilibrated
 
-@directives(executable="python -u")
-@directives(ngpu=1)
-@MyProject.operation
 @MyProject.post(initial_run_done)
+@MyProject.operation(directives={"executable":"python -u","ngpu": "1"}, name="test2-sim1")
+
 def sample(job):
-    import hoomd_polymers
-    from hoomd_polymers.systems import Pack
-    import hoomd_polymers.forcefields
-    from hoomd_polymers.sim import Simulation
+    # import hoomd_polymers
+    # from hoomd_polymers.systems import Pack
+    # import hoomd_polymers.forcefields
+    # from hoomd_polymers.sim import Simulation
+    import flowermd
+    from flowermd.utils import get_target_box_mass_density
+    from flowermd.base import Simulation, Molecule
+    from flowermd.library import FF_from_file
+    from flowermd.base.system import Pack
+
     import mbuild as mb
     import foyer
 
@@ -104,8 +108,10 @@ def sample(job):
                 p.name = f"_{p.name}"
             return mol
 
+        esp_mol = espaloma_mol(mol_path)
+
         system = Pack(
-                molecule=espaloma_mol,
+                molecules=esp_mol,
                 density=job.sp.density,
                 n_mols=job.sp.n_compounds,
                 mol_kwargs = {
@@ -153,102 +159,6 @@ def sample(job):
                 n_steps=job.sp.n_steps,
                 tau_kt=job.sp.tau_kt
         )
-
-@directives(executable="python -u")
-@directives(ngpu=1)
-@MyProject.operation
-@MyProject.pre(initial_run_done)
-@MyProject.post(equilibrated)
-def resume(job):
-    import pickle
-
-    import gsd.hoomd
-    import hoomd_polymers
-    from hoomd_polymers.systems import Pack
-    import hoomd_polymers.forcefields
-    from hoomd_polymers.sim import Simulation
-
-    with job:
-        print("JOB ID NUMBER:")
-        print(job.id)
-        print("Resuming Simulation")
-        # Grab the correct pickle file for the forces
-        if job.sp.remove_hydrogens and job.sp.remove_charges:
-            dt = 0.0003
-            ff_file = "/home/madilynpaul/forcefield_UA_unCH.pickle"
-        if job.sp.remove_hydrogens and not job.sp.remove_charges:
-            dt = 0.0003
-            ff_file = "/home/madilynpaul/forcefield_UA_CH.pickle"
-        if not job.sp.remove_hydrogens and job.sp.remove_charges:
-            dt = 0.0001
-            ff_file = "/home/madilynpaul/forcefield_AA_unCH.pickle"
-        if not job.sp.remove_hydrogens and not job.sp.remove_charges:
-            dt = 0.0001
-            ff_file = "/home/madilynpaul/forcefield_AA_CH.pickle"
-        with open(ff_file, "rb") as f:
-            hoomd_ff = pickle.load(f)
-        
-        gsd_path = job.fn(f"trajectory{job.doc.run + 1}.gsd")
-        log_path = job.fn(f"sim_data{job.doc.run + 1}.txt")
-        if job.isfile("restart.gsd"):
-            init_state = job.fn("restart.gsd")
-        else:
-            with gsd.hoomd.open(job.fn("trajectory.gsd")) as traj:
-                init_state = traj[-1]
-
-        system_sim = Simulation(
-            initial_state=init_state,
-            forcefield=hoomd_ff,
-            gsd_write_freq=job.sp.n_steps/1000,
-            gsd_file_name=gsd_path,
-            log_file_name=log_path,
-            dt=dt,
-            log_write_freq=100000
-        )
-
-        system_sim.run_NVT(
-                kT=job.sp.kT,
-                n_steps=1e8,
-                tau_kt=job.sp.tau_kt
-        )
-        system_sim.save_restart_gsd(job.fn("restart.gsd"))
-        job.doc.run += 1
-
-
-@directives(executable="python -u")
-@MyProject.operation
-@MyProject.pre(equilibrated)
-def coarse_grain(job):
-    import grits
-    from grits import CG_System, CG_Compound
-    import gsd.hoomd
-    import ele
-
-    with gsd.hoomd.open(job.fn("cg_traj.gsd"),"wb") as new_traj:
-        with gsd.hoomd.open(job.fn("trajectory.gsd")) as first_traj:
-            new_traj.append(first_traj[0])
-        if job.doc.run > 0:
-            with gsd.hoomd.open(job.fn(f"trajectory{job.doc.run}.gsd")) as last_traj:
-                numframes = len(last_traj)
-                print(numframes)
-                for frame in last_traj[::50]:
-                    new_traj.append(frame)
-        if job.doc.run == 0:
-            with gsd.hoomf.open(job.fn('trajectory.gsd')) as last_traj:
-                for frame in last_traj[::50]:
-                    new_traj.append(frame)
-
-    p3ht_dict = {"C0": ele.element_from_symbol("C"),
-             "C1": ele.element_from_symbol("C"),
-             "S2":ele.element_from_symbol("S")}
-
-    cg_system = CG_System(
-        gsdfile=job.fn("cg_traj.gsd"),
-        mapping = "/home/madilynpaul/notebooks/hoomdpolymers/p3ht_study/15mer/den_temp_sweep/test.json",
-        conversion_dict=p3ht_dict)
-    cg_system.save(job.fn("p3ht-cg.gsd"))
-    cg_system.save_mapping(job.fn("p3ht-cg-mapping.json"))
-
 
 if __name__ == "__main__":
     MyProject(environment=Fry).main()

@@ -1,4 +1,5 @@
 # Dictionary of polymers and their key parameters
+import ele
 
 bond_indices = {
     "PCPDTPT_nC16": {"Bond indices": [121,122], "Orientations":[[1,0,0],[-1,0,0]], "Density": 0.05},
@@ -35,5 +36,16 @@ polymer_fragments = {
     "T":"c1ccsc1",
     "CPDT_eneHD":"C1(=C(CC(CCCCCC)CCCCCCCC)CC(CCCCCC)CCCCCCCC)C3=C(SC=C3)C2=C1C=CS2",
     "TPD":"C1(=O)C2=CSC=C2C(=O)N1(CCCCCCCC)",
-    "BDT":"s1c2c(OCC(CC)CCCC)c3ccsc3c(OCC(CC)CCCC)c2cc1"}
-    
+    "BDT":"s1c2c(OCC(CC)CCCC)c3ccsc3c(OCC(CC)CCCC)c2cc1"
+}
+
+element_dict = {("C0"): ele.element_from_symbol("C"),
+                 ("C1"): ele.element_from_symbol("C"),
+                 ("C3"): ele.element_from_symbol("C"),
+                 ("C5"): ele.element_from_symbol("C"),
+                 ("C6"): ele.element_from_symbol("C"),
+                 ("N3"): ele.element_from_symbol("N"),
+                 ("N5"): ele.element_from_symbol("N"),
+                 ("F4"): ele.element_from_symbol("F"),
+                 ("S1"):ele.element_from_symbol("S"),
+                 ("S2"):ele.element_from_symbol("S")}

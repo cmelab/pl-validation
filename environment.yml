@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - freud >= 3.0
-  - gmso >=0.11.2
+  - gmso <=0.12.4
   - fresnel >=0.13.5
   - gsd >=3.0
   - hoomd >=4.0

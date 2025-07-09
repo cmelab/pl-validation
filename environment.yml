@@ -22,3 +22,4 @@ dependencies:
   - signac <= 1.8
   - signac-flow <= 0.24
   - rdkit
+  - statsmodels

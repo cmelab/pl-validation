@@ -2,20 +2,24 @@ name: p_l
 channels:
   - conda-forge
 dependencies:
-  - freud >= 3.0
-  - gmso >=0.11.2
+  - espaloma = 0.3.2
+  - flowermd
   - fresnel >=0.13.5
+  - freud >= 3.0
+  - gmso <=0.12.4
+  - grits >= 0.5.1
   - gsd >=3.0
   - hoomd >=4.0
-  - mbuild >=0.16.4
-  - numpy
-  - pip
-  - python >= 3.10,<3.12
-  - matplotlib
-  - mdanalysis
   - jupyter
-  - espaloma = 0.3.2
-  - grits >=0.5.0
+  - matplotlib
+  - mbuild >=0.16.4
+  - mdanalysis
+  - numpy
   - openbabel
+  - pip
   - py3Dmol
-  - flowermd
+  - python >= 3.10,<3.12
+  - rdkit
+  - signac <= 1.8
+  - signac-flow <= 0.24
+  - statsmodel

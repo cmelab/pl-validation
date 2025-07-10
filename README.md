@@ -9,6 +9,8 @@ poly_builder.ipynb uses mbuild to polymerize the monomers.
 
 poly_min_working_example.ipynb contains code to run NVT shrinks and simulations.
 
+coarse_grain.ipynb Makes CG beads in preparation for persistence length calculations.
+
 data_analysis.ipynb has the requisite functions for calculating the persistence length of mbuild polymers.
 
 ## To install environment:

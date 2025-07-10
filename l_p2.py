@@ -31,26 +31,18 @@ def get_decorr(acorr):
     """
     return np.argmin(acorr > 0)
 
-def persistence_length(filepath,start,stop,interval):
+def persistence_length(filepath, atom_index, monomer_count, start, stop, interval):
     """
     filepath needs to be a format in which you can
     create an mdanalysis universe from, we mostly use gsd files
     """
     u = mda.Universe(topology=filepath)
 
-    """rewrite atom indices"""
-    bond_indices = []
-    particle_index = [0]
-    for i in range(len(u.bonds)):
-        a = u.bonds[i].atoms.indices
-        bond_indices.append(list(a))
-        if particle_index[-1] in bond_indices[i]:
-            atom1 = bond_indices[i][0]
-            atom2 = bond_indices[i][1]
-            if atom1 not in particle_index:
-                particle_index.append(atom1)
-            if atom2 not in particle_index:
-                particle_index.append(atom2)
+    n_monomers = monomer_count
+    n_atoms_total = len(u.atoms)
+    n_atoms_per_monomer = n_atoms_total // n_monomers
+    monomer_atoms = u.atoms[atom_index::n_atoms_per_monomer]
+
 
     """create bonds list"""
     autocorrelation = []
@@ -62,8 +54,8 @@ def persistence_length(filepath,start,stop,interval):
         bond_lengths = []
         angles = []
 
-        for i in particle_index:
-            pos = t.positions[i]
+        for atom in monomer_atoms: # Looping through atoms in a monomer
+            pos = atom.position
             particle_positions.append(pos)
         for i in range(len(particle_positions)-1):
             b = particle_positions[i+1]-particle_positions[i]

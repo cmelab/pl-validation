@@ -4,7 +4,8 @@ from MDAnalysis.analysis import polymer
 import matplotlib.pyplot as plt
 import scipy
 import statsmodels.api as sm
-
+import gsd
+from grits import utils
 
 def autocorr1D(array):
     """Takes in a linear np array, performs autocorrelation
@@ -31,7 +32,39 @@ def get_decorr(acorr):
     """
     return np.argmin(acorr > 0)
 
-def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=None, interval=1):
+def get_monomers(filepath, frame_num, monomer_count=1):
+    """
+    Returns a list of GSD frames of each monomer in a polymer. Use this if you need GSD Frame Particle data for only SOME atoms.
+    """
+    with gsd.hoomd.open(filepath, "r") as traj:
+        frame = traj[frame_num]
+    
+    n_atoms_total = frame.particles.N
+    atoms_per_monomer = n_atoms_total // monomer_count
+    
+    monomer_frames = []
+    
+    for i in range(monomer_count):
+        start = i * atoms_per_monomer # First atom in a monomer
+        end = (i + 1) * atoms_per_monomer # Last atom in the monomer
+        new_indicies = np.arange(start, end)
+        
+        # Add all properties of the particles into the new frame
+        new_frame = gsd.hoomd.Frame()
+        new_frame.particles.N = len(new_indicies)
+        new_frame.particles.position = frame.particles.position[new_indicies]
+        new_frame.particles.typeid = frame.particles.typeid[new_indicies]
+        new_frame.particles.types = frame.particles.types
+        new_frame.particles.velocity = frame.particles.velocity[new_indicies]
+        new_frame.particles.mass = frame.particles.mass[new_indicies]
+        new_frame.particles.charge = frame.particles.charge[new_indicies]
+        new_frame.particles.body = frame.particles.body[new_indicies]
+    
+        monomer_frames.append(new_frame)
+    return monomer_frames
+
+
+def persistence_length1(filepath, monomer_count, start=0, stop=None, interval=1):
     """
     filepath needs to be a format in which you can
     create an mdanalysis universe from, we mostly use gsd files
@@ -41,8 +74,6 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
     n_monomers = monomer_count
     total_atoms = len(u.atoms)
     atoms_per_monomer = total_atoms // n_monomers
-    monomer_atoms = u.atoms[atom_index::atoms_per_monomer-2]
-
 
     """create bonds list"""
     autocorrelation = []
@@ -53,10 +84,15 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
         unit_bonds = []
         bond_lengths = []
         angles = []
+        coms = []
+        mon_particles = get_monomers(filepath, t.frame, monomer_count)
 
-        for atom in monomer_atoms: # Looping through atoms in a monomer
-            pos = atom.position
-            particle_positions.append(pos)
+        for frame in mon_particles:
+            particles = frame.particles
+            pos,mass = utils.get_heavy_atoms(particles)
+            coms.append(utils.get_com(pos,mass))
+        for com in coms: # Looping through atoms in a monomer
+            particle_positions.append(com)
         for i in range(len(particle_positions)-1):
             b = particle_positions[i+1]-particle_positions[i]
             bonds.append(b)

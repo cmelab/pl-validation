@@ -7,30 +7,12 @@ import statsmodels.api as sm
 import gsd
 from grits import utils
 
-def autocorr1D(array):
-    """Takes in a linear np array, performs autocorrelation
-    function and returns normalized array with half the length
-    of the input.
-
-    Parameters
-    ----------
-    data : numpy.typing.Arraylike, required
-        1-D series of data to perform autocorrelation on.
-
-    Returns
-    -------
-    1D np.array
-
-    """
-    ft = np.fft.rfft(array - np.average(array))
-    acorr = np.fft.irfft(ft * np.conjugate(ft)) / (len(array) * np.var(array))
-    return acorr[0 : len(acorr) // 2]  # noqa: E203
-
 def get_decorr(acorr):
     """
     Returns the decorrelation time of the autocorrelation, a 1D np array
     """
     return np.argmin(acorr > 0)
+
 
 def get_monomers(filepath, frame_num, monomer_count=1):
     """
@@ -47,18 +29,18 @@ def get_monomers(filepath, frame_num, monomer_count=1):
     for i in range(monomer_count):
         start = i * atoms_per_monomer # First atom in a monomer
         end = (i + 1) * atoms_per_monomer # Last atom in the monomer
-        new_indicies = np.arange(start, end)
+        new_indices = np.arange(start, end)
         
         # Add all properties of the particles into the new frame
         new_frame = gsd.hoomd.Frame()
-        new_frame.particles.N = len(new_indicies)
-        new_frame.particles.position = frame.particles.position[new_indicies]
-        new_frame.particles.typeid = frame.particles.typeid[new_indicies]
+        new_frame.particles.N = len(new_indices)
+        new_frame.particles.position = frame.particles.position[new_indices]
+        new_frame.particles.typeid = frame.particles.typeid[new_indices]
         new_frame.particles.types = frame.particles.types
-        new_frame.particles.velocity = frame.particles.velocity[new_indicies]
-        new_frame.particles.mass = frame.particles.mass[new_indicies]
-        new_frame.particles.charge = frame.particles.charge[new_indicies]
-        new_frame.particles.body = frame.particles.body[new_indicies]
+        new_frame.particles.velocity = frame.particles.velocity[new_indices]
+        new_frame.particles.mass = frame.particles.mass[new_indices]
+        new_frame.particles.charge = frame.particles.charge[new_indices]
+        new_frame.particles.body = frame.particles.body[new_indices]
     
         monomer_frames.append(new_frame)
     return monomer_frames

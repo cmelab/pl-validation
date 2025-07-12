@@ -41,8 +41,7 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
     n_monomers = monomer_count
     total_atoms = len(u.atoms)
     atoms_per_monomer = total_atoms // n_monomers
-    monomer_atoms = u.atoms[atom_index::atoms_per_monomer-2]
-
+    monomer_atoms = u.atoms[atom_index::atoms_per_monomer]
 
     """create bonds list"""
     autocorrelation = []
@@ -72,7 +71,6 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
             length = np.linalg.norm(b)
             bond_lengths.append(length)
         bond_len.append(bond_lengths)
-
 
         for i in range(len(unit_bonds)-1):
             b1 = unit_bonds[0]
@@ -104,7 +102,7 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
             auto_average[r] = 0
     def expfunc(x, a):
         return np.exp(-x/a)
-
+    
     exp_coeff = scipy.optimize.curve_fit(expfunc,x,auto_average)[0][0]
 
     l_p = exp_coeff * l_b

@@ -77,10 +77,7 @@ def equilibrated(job):
 @MyProject.operation(directives={"executable":"python -u","ngpu": "1"}, name="test2-sim1")
 
 def sample(job):
-    # import hoomd_polymers
-    # from hoomd_polymers.systems import Pack
-    # import hoomd_polymers.forcefields
-    # from hoomd_polymers.sim import Simulation
+
     import flowermd
     from flowermd.utils import get_target_box_mass_density
     from flowermd.base import Simulation, Molecule
@@ -113,7 +110,6 @@ def sample(job):
         system = Pack(
                 molecules=esp_mol,
                 density=job.sp.density,
-                n_mols=job.sp.n_compounds,
                 mol_kwargs = {
                     "file_path": mol_path,
                 },

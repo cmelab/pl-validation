@@ -13,39 +13,6 @@ def get_decorr(acorr):
     """
     return np.argmin(acorr > 0)
 
-
-def get_monomers(filepath, frame_num, monomer_count=1):
-    """
-    Returns a list of GSD frames of each monomer in a polymer. Use this if you need GSD Frame Particle data for only SOME atoms.
-    """
-    with gsd.hoomd.open(filepath, "r") as traj:
-        frame = traj[frame_num]
-    
-    n_atoms_total = frame.particles.N
-    atoms_per_monomer = n_atoms_total // monomer_count
-    
-    monomer_frames = []
-    
-    for i in range(monomer_count):
-        start = i * atoms_per_monomer # First atom in a monomer
-        end = (i + 1) * atoms_per_monomer # Last atom in the monomer
-        new_indices = np.arange(start, end)
-        
-        # Add all properties of the particles into the new frame
-        new_frame = gsd.hoomd.Frame()
-        new_frame.particles.N = len(new_indices)
-        new_frame.particles.position = frame.particles.position[new_indices]
-        new_frame.particles.typeid = frame.particles.typeid[new_indices]
-        new_frame.particles.types = frame.particles.types
-        new_frame.particles.velocity = frame.particles.velocity[new_indices]
-        new_frame.particles.mass = frame.particles.mass[new_indices]
-        new_frame.particles.charge = frame.particles.charge[new_indices]
-        new_frame.particles.body = frame.particles.body[new_indices]
-    
-        monomer_frames.append(new_frame)
-    return monomer_frames
-
-
 def persistence_length1(filepath, monomer_count, start=0, stop=None, interval=1):
     """
     filepath needs to be a format in which you can
@@ -67,12 +34,12 @@ def persistence_length1(filepath, monomer_count, start=0, stop=None, interval=1)
         bond_lengths = []
         angles = []
         coms = []
-        mon_particles = get_monomers(filepath, t.frame, monomer_count)
 
-        for frame in mon_particles:
-            particles = frame.particles
-            pos,mass = utils.get_heavy_atoms(particles)
-            coms.append(utils.get_com(pos,mass))
+        for i in range(monomer_count):
+            start = i * atoms_per_monomer
+            end = (i + 1) * atoms_per_monomer
+            group = u.atoms[start:end].select_atoms("not name C0") # Ignoring sidechains
+            coms.append(group.center_of_mass(wrap=True))
         for com in coms: # Looping through atoms in a monomer
             particle_positions.append(com)
         for i in range(len(particle_positions)-1):

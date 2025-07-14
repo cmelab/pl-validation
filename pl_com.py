@@ -4,26 +4,8 @@ from MDAnalysis.analysis import polymer
 import matplotlib.pyplot as plt
 import scipy
 import statsmodels.api as sm
-
-
-def autocorr1D(array):
-    """Takes in a linear np array, performs autocorrelation
-    function and returns normalized array with half the length
-    of the input.
-
-    Parameters
-    ----------
-    data : numpy.typing.Arraylike, required
-        1-D series of data to perform autocorrelation on.
-
-    Returns
-    -------
-    1D np.array
-
-    """
-    ft = np.fft.rfft(array - np.average(array))
-    acorr = np.fft.irfft(ft * np.conjugate(ft)) / (len(array) * np.var(array))
-    return acorr[0 : len(acorr) // 2]  # noqa: E203
+import gsd
+from grits import utils
 
 def get_decorr(acorr):
     """
@@ -31,7 +13,7 @@ def get_decorr(acorr):
     """
     return np.argmin(acorr > 0)
 
-def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=None, interval=1):
+def persistence_length1(filepath, monomer_count, start=0, stop=None, interval=1):
     """
     filepath needs to be a format in which you can
     create an mdanalysis universe from, we mostly use gsd files
@@ -41,7 +23,6 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
     n_monomers = monomer_count
     total_atoms = len(u.atoms)
     atoms_per_monomer = total_atoms // n_monomers
-    monomer_atoms = u.atoms[atom_index::atoms_per_monomer]
 
     """create bonds list"""
     autocorrelation = []
@@ -52,10 +33,15 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
         unit_bonds = []
         bond_lengths = []
         angles = []
+        coms = []
 
-        for atom in monomer_atoms: # Looping through atoms in a monomer
-            pos = atom.position
-            particle_positions.append(pos)
+        for i in range(monomer_count):
+            start = i * atoms_per_monomer
+            end = (i + 1) * atoms_per_monomer
+            group = u.atoms[start:end].select_atoms("not name C0") # Ignoring sidechains
+            coms.append(group.center_of_mass(wrap=True))
+        for com in coms: # Looping through atoms in a monomer
+            particle_positions.append(com)
         for i in range(len(particle_positions)-1):
             b = particle_positions[i+1]-particle_positions[i]
             bonds.append(b)
@@ -71,6 +57,7 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
             length = np.linalg.norm(b)
             bond_lengths.append(length)
         bond_len.append(bond_lengths)
+
 
         for i in range(len(unit_bonds)-1):
             b1 = unit_bonds[0]
@@ -102,7 +89,7 @@ def persistence_length(filepath, atom_index=1, monomer_count=1, start=0, stop=No
             auto_average[r] = 0
     def expfunc(x, a):
         return np.exp(-x/a)
-    
+
     exp_coeff = scipy.optimize.curve_fit(expfunc,x,auto_average)[0][0]
 
     l_p = exp_coeff * l_b

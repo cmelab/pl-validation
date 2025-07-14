@@ -9,7 +9,7 @@ dependencies:
   - gmso <=0.12.4
   - grits >= 0.5.1
   - gsd >=3.0
-  - hoomd >=4.0
+  - hoomd <=4.5
   - jupyter
   - matplotlib
   - mbuild >=0.16.4
@@ -22,4 +22,3 @@ dependencies:
   - rdkit
   - signac <= 1.8
   - signac-flow <= 0.24
-  - statsmodel

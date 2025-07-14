@@ -7,7 +7,7 @@ The ff_generation.ipynb generates mbuild monomers and their forcefields using [E
 
 poly_builder.ipynb uses mbuild to polymerize the monomers.
 
-poly_min_working_example.ipynb contains code to run NVT shrinks and simulations.
+poly_min_working_example.ipynb contains code to run NVT simulations.
 
 coarse_grain.ipynb Makes CG beads in preparation for persistence length calculations.
 
@@ -19,7 +19,3 @@ git clone https://github.com/cmelab/pl-validation.git
 conda env create -f environment.yml
 conda activate p_l
 ```
-
-
-# Eric's notes:
-ff_generation builds 

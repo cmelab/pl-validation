@@ -10,7 +10,6 @@ fixed_PCPDTPT_nC16.xml
 */__pycache__/*
 __pycache__/
 *.pt
-project.py
 init.py
 *.sh
 *.png

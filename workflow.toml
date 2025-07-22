@@ -2,9 +2,8 @@
 value_file = "signac_statepoint.json"
 
 [default.action]
-command = "python actions.py --action $ACTION_NAME {directories}"
+command = "python action.py --action $ACTION_NAME {directories}"
 
 [[action]]
-name = "run_sim"
-command = "python /home/jacobbieri/repos/persistence-length/p3ht/p3ht/action.py --action sample {directories}"
+name = "sample"
 products = ["trajectory.gsd","log.txt"]

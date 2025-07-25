@@ -20,9 +20,9 @@ def espaloma_mol(file_path):
 	   return mol
 
 
-system_file = "/bsuhome/jacobbieri/repos/pl-validation/mol2/PCPDTFBT_C5_BO.mol2"
-ff_filepath = "/bsuhome/jacobbieri/repos/pl-validation/xml/PCPDTFBT_C5_BO.xml"
-gsd_path = "test-C5-monomer"
+system_file = "/home/jacobbieri/repos/persistence-length/mol2/10_mers/PCPDTFBT_C5_BO_10mer.mol2"
+ff_filepath = "/home/jacobbieri/repos/persistence-length/xml/PCPDTFBT_C5_BO.xml"
+gsd_path = "PCPDTFBT-C5-BO-10_mer"
 espmol = espaloma_mol(system_file)
 molecule = Molecule(num_mols=1, compound=espmol)
 
@@ -32,6 +32,6 @@ system = Pack(molecules=molecule,density=0.01 * u.g/u.cm**3)
 print("Time:", time.time() - start_time, "s to pack")
 system.apply_forcefield(r_cut=2.5, force_field=molff, auto_scale=True,remove_charges=True, remove_hydrogens=True)
 system.hoomd_snapshot
-sim = Simulation.from_system(system=system, gsd_write_freq=5000, log_write_freq=5000, gsd_file_name=gsd_path+".gsd",log_file_name=gsd_path+".txt")
-sim.run_NVT(n_steps=5e5, kT=5.0, tau_kt=0.05)
+sim = Simulation.from_system(system=system, gsd_write_freq=10000, log_write_freq=10000, gsd_file_name=gsd_path+".gsd",log_file_name=gsd_path+".txt")
+sim.run_NVT(n_steps=5e7, kT=5.0, tau_kt=1)
 sim.flush_writers()

@@ -1,9 +1,0 @@
-[workspace]
-value_file = "signac_statepoint.json"
-
-[default.action]
-command = "python action.py --action $ACTION_NAME {directories}"
-
-[[action]]
-name = "sample"
-products = ["trajectory.gsd","log.txt"]

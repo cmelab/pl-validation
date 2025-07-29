@@ -83,9 +83,9 @@ def sample(job):
     from flowermd.base import Simulation, Molecule
     from flowermd.library import FF_from_file
     from flowermd.base.system import Pack
+    import unyt as u
 
     import mbuild as mb
-    import foyer
 
     with job:
         print("JOB ID NUMBER:")
@@ -94,9 +94,9 @@ def sample(job):
             dt = 0.0003
         if not job.sp.remove_hydrogens:
             dt = 0.0001
-        system_file = "/home/jacobbieri/projects/persistence-length/P3HT.mol2"
+        system_file = "/home/jacobbieri/repos/persistence-length/P3HT.mol2"
         mol_path = os.path.join(os.getcwd(), system_file)
-        ff_file = "/home/jacobbieri/projects/persistence-length/P3HT.xml"
+        ff_file = "/home/jacobbieri/repos/persistence-length/P3HT.xml"
         ff_path = os.path.join(os.getcwd(), ff_file)
 
         def espaloma_mol(file_path):
@@ -110,20 +110,13 @@ def sample(job):
         system = Pack(
                 molecules=esp_mol,
                 density=job.sp.density,
-                mol_kwargs = {
-                    "file_path": mol_path,
-                },
                 packing_expand_factor=5
         )
 
-        system_ff = foyer.Forcefield(forcefield_files=ff_path)
-        system.apply_forcefield(
-                forcefield=system_ff,
-                make_charge_neutral=True,
-                remove_hydrogens=job.sp.remove_hydrogens,
-                remove_charges=job.sp.remove_charges
-        )
-
+        molff = FF_from_file(ff_path)
+        system = Pack(molecules=esp_mol,density=job.sp.density * u.g/u.cm**3, packing_expand_factor=5)
+        system.apply_forcefield(r_cut=2.5, force_field=molff, auto_scale=True,remove_charges=True, remove_hydrogens=True)
+        
         job.doc.ref_distance = system.reference_distance
         job.doc.ref_mass = system.reference_mass
         job.doc.ref_energy = system.reference_energy
@@ -133,23 +126,13 @@ def sample(job):
 
         system_sim = Simulation(
             initial_state=system.hoomd_snapshot,
-            forcefield=system.hoomd_forcefield,
             gsd_write_freq=job.sp.n_steps/1000,
             gsd_file_name=gsd_path,
             log_file_name=log_path,
-            log_write_freq=100000,
-            dt=dt
+            log_write_freq=job.sp.n_steps/1000,
+            dt=job.sp.dt
         )
-        target_box = system.target_box*10/job.doc.ref_distance
-        job.doc.target_box = target_box
-
-        system_sim.run_update_volume(
-                final_box_lengths=target_box,
-                n_steps=job.sp.shrink_steps,
-                period=job.sp.shrink_period,
-                tau_kt=job.sp.tau_kt,
-                kT=job.sp.shrink_kT
-        )
+        
         system_sim.run_NVT(
                 kT=job.sp.kT,
                 n_steps=job.sp.n_steps,

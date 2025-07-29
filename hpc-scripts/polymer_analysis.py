@@ -16,6 +16,7 @@ ref_length = 0.3563594872561357
 # Change based on experiment
 num_monomers = 10
 variable_being_tested = "pl_independence"
+start_frame = 1000
 
 key_list = sorted(list(polymer_dictionary.keys()))
 path = os.getcwd()
@@ -29,7 +30,7 @@ for i in range(len(molecule_list)):
     h = persistence_length(filepath=molecule_list[i],
                        atom_index=polymer_dictionary.get(key_list[i]).get("Sulfur index"),
                        monomer_count=num_monomers,
-                       start=50)
+                       start=start_frame)
     l_p = h[0]
     # l_b = h[1]
     # x_values = h[2]
@@ -46,7 +47,7 @@ exp_fits1 = []
 for i in range(len(molecule_list)):
     h = persistence_length(filepath=molecule_list[i],
                        monomer_count=num_monomers,
-                       start=50)
+                       start=start_frame)
     l_p = h[0]
     # l_b = h[1]
     # x_values = h[2]
